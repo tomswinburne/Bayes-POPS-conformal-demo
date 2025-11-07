@@ -384,13 +384,13 @@ def _(
         pops_label = mo.md("**POPS regression parameters**")
         percentile_clipping = mo.ui.slider(0, 10, 1, get_percentile_clipping(), label="Percentile clipping", on_change=set_percentile_clipping)
         leverage_percentile = mo.ui.slider(0, 99, 5, get_leverage_percentile(), label="Leverage percentile", on_change=set_leverage_percentile)
-        resample_density = mo.ui.slider(0.1, 3.0, 5, get_resample_density(), label="Resample density", on_change=set_resample_density)
+        resample_density = mo.ui.slider(0.3, 3.0, 0.1, get_resample_density(), label="Resample density", on_change=set_resample_density)
         
     else:
         pops_label = mo.Html("<p style='color: #d0d0d0; font-weight: bold;'>POPS regression parameters</p>")
         percentile_clipping = mo.Html(f"<div style='opacity: 0.4;'>{mo.ui.slider(0, 10, 1, get_percentile_clipping(), label='Percentile clipping', disabled=True, on_change=set_percentile_clipping)}</div>")
         leverage_percentile = mo.Html(f"<div style='opacity: 0.4;'>{mo.ui.slider(0, 99, 5, get_leverage_percentile(), label='Leverage percentile', disabled=True, on_change=set_leverage_percentile)}</div>")
-        resample_density = mo.Html(f"<div style='opacity: 0.4;'>{mo.ui.slider(0.1, 3.0, 5, get_resample_density(), label='Resample density', disabled=True, on_change=set_resample_density)}</div>")
+        resample_density = mo.Html(f"<div style='opacity: 0.4;'>{mo.ui.slider(0.3, 3.0, 0.1, get_resample_density(), label='Resample density', disabled=True, on_change=set_resample_density)}</div>")
 
     controls = mo.hstack([
         mo.vstack([
