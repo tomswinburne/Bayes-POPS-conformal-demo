@@ -295,8 +295,8 @@ def _(
 
         if label == 'POPS regression':
             y_pred, y_std, y_max, y_min = model.predict(Phi_test, return_std=True, return_bounds=True)
-            y_max = y_pred + (model.pointwise_corrections@Phi_test.T).max(0)
-            y_min = y_pred + (model.pointwise_corrections@Phi_test.T).min(0)
+            y_max = y_pred + (model.pointwise_correction@Phi_test.T).max(0)
+            y_min = y_pred + (model.pointwise_correction@Phi_test.T).min(0)
             if aleatoric.value:
                 y_std = np.sqrt(y_std**2 + 1.0 / model.alpha_)
                 y_min -= np.sqrt(1.0 / model.alpha_)
