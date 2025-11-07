@@ -399,7 +399,7 @@ def _(
         mo.vstack([data_label, N_samples, sigma, seed]),
         mo.vstack([reg_label, P_elem, aleatoric]),
         mo.vstack([cp_label, calib_frac, zeta]),
-        mo.vstack([pops_label, percentile_clipping, leverage_percentile])
+        mo.vstack([pops_label, percentile_clipping, leverage_percentile, resample_density])
     ], gap=0.5)
 
     mo.Html(f'''
