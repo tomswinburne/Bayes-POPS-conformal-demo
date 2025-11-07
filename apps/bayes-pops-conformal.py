@@ -224,7 +224,6 @@ def _(
     get_N_samples,
     get_P,
     get_calib_frac,
-    get_leverage_percentile,
     get_percentile_clipping,
     get_seed,
     get_sigma,
@@ -263,7 +262,7 @@ def _(
     Phi_calib = poly.transform(X_calib)
 
     b = MyBayesianRidge(fit_intercept=False) 
-    p = POPSRegression(fit_intercept=False, percentile_clipping=get_percentile_clipping(), leverage_percentile=get_leverage_percentile())
+    p = POPSRegression(fit_intercept=False, percentile_clipping=get_percentile_clipping(), leverage_percentile=0)
     c = ConformalPrediction(fit_intercept=False)
 
     ax.plot(X_test[:, 0], y_test, 'k-', label='Truth')
@@ -336,7 +335,6 @@ def _(
     get_N_samples,
     get_P,
     get_calib_frac,
-    get_leverage_percentile,
     get_percentile_clipping,
     get_seed,
     get_sigma,
@@ -346,7 +344,6 @@ def _(
     set_N_samples,
     set_P,
     set_calib_frac,
-    set_leverage_percentile,
     set_percentile_clipping,
     set_seed,
     set_sigma,
@@ -385,14 +382,12 @@ def _(
     if pops.value:
         pops_label = mo.md("**POPS regression parameters**")
         percentile_clipping = mo.ui.slider(0, 10, 1, get_percentile_clipping(), label="Percentile clipping", on_change=set_percentile_clipping)
-        #leverage_percentile = mo.ui.slider(0, 99, 5, get_leverage_percentile(), label="Leverage percentile", on_change=set_leverage_percentile)
         hypercube = mo.ui.dropdown(options={"Ensemble":False,"Hypercube":True},value="Ensemble",label="Posterior")
         
         
     else:
         pops_label = mo.Html("<p style='color: #d0d0d0; font-weight: bold;'>POPS regression parameters</p>")
         percentile_clipping = mo.Html(f"<div style='opacity: 0.4;'>{mo.ui.slider(0, 10, 1, get_percentile_clipping(), label='Percentile clipping', disabled=True, on_change=set_percentile_clipping)}</div>")
-        #leverage_percentile = mo.Html(f"<div style='opacity: 0.4;'>{mo.ui.slider(0, 99, 5, get_leverage_percentile(), label='Leverage percentile', disabled=True, on_change=set_leverage_percentile)}</div>")
         hypercube = mo.Html(f"<div style='opacity: 0.4;'>{mo.ui.dropdown(options={"Ensemble":False,"Hypercube":True},value="Ensemble",label="Posterior",disabled=True)}</div>")
 
     controls = mo.hstack([
@@ -406,7 +401,7 @@ def _(
         mo.vstack([data_label, N_samples, sigma, seed]),
         mo.vstack([reg_label, P_elem, aleatoric]),
         mo.vstack([cp_label, calib_frac, zeta]),
-        mo.vstack([pops_label, percentile_clipping, hypercube]) # leverage_percentile
+        mo.vstack([pops_label, percentile_clipping, hypercube])
     ], gap=0.5)
 
     mo.Html(f'''
@@ -435,13 +430,11 @@ def _(mo):
     get_calib_frac, set_calib_frac = mo.state(0.2)
     get_zeta, set_zeta = mo.state(0.05)
     get_percentile_clipping, set_percentile_clipping = mo.state(0)
-    get_leverage_percentile, set_leverage_percentile = mo.state(0)
     
     return (
         get_N_samples,
         get_P,
         get_calib_frac,
-        get_leverage_percentile,
         get_percentile_clipping,
         get_seed,
         get_sigma,
@@ -449,7 +442,6 @@ def _(mo):
         set_N_samples,
         set_P,
         set_calib_frac,
-        set_leverage_percentile,
         set_percentile_clipping,
         set_seed,
         set_sigma,
