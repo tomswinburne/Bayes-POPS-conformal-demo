@@ -298,6 +298,8 @@ def _(
             y_pred, y_std, y_min, y_max = model.predict(Phi_test, return_std=True, return_bounds=True)
             if aleatoric.value:
                 y_std = np.sqrt(y_std**2 + 1.0 / model.alpha_)
+                y_min -= np.sqrt(1.0 / model.alpha_)
+                y_max += np.sqrt(1.0 / model.alpha_)
         else:
             y_pred, y_std = model.predict(Phi_test, **kwargs)
         ax.plot(X_test[:, 0], y_pred, color=color, lw=3)
@@ -419,13 +421,13 @@ def _(mo):
 def _(mo):
     # Use marimo state to preserve all slider values
     get_N_samples, set_N_samples = mo.state(500)
-    get_sigma, set_sigma = mo.state(0.1)
+    get_sigma, set_sigma = mo.state(0.001)
     get_seed, set_seed = mo.state(0)
     get_P, set_P = mo.state(10)
     get_calib_frac, set_calib_frac = mo.state(0.2)
     get_zeta, set_zeta = mo.state(0.05)
     get_percentile_clipping, set_percentile_clipping = mo.state(0)
-    get_leverage_percentile, set_leverage_percentile = mo.state(50)
+    get_leverage_percentile, set_leverage_percentile = mo.state(0)
     return (
         get_N_samples,
         get_P,
