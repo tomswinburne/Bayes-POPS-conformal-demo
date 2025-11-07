@@ -382,13 +382,12 @@ def _(
     if pops.value:
         pops_label = mo.md("**POPS regression parameters**")
         percentile_clipping = mo.ui.slider(0, 10, 1, get_percentile_clipping(), label="Percentile clipping", on_change=set_percentile_clipping)
-        hypercube = mo.ui.dropdown(options={"Ensemble":False,"Hypercube":True},value="Ensemble",label="Posterior")
-        
+        hypercube = mo.ui.checkbox(False, label="Hypercube Posterior")
         
     else:
         pops_label = mo.Html("<p style='color: #d0d0d0; font-weight: bold;'>POPS regression parameters</p>")
         percentile_clipping = mo.Html(f"<div style='opacity: 0.4;'>{mo.ui.slider(0, 10, 1, get_percentile_clipping(), label='Percentile clipping', disabled=True, on_change=set_percentile_clipping)}</div>")
-        hypercube = mo.Html(f"<div style='opacity: 0.4;'>{mo.ui.dropdown(options={"Ensemble":False,"Hypercube":True},value="Ensemble",label="Posterior",disabled=True)}</div>")
+        hypercube = mo.Html(f"<div style='opacity: 0.4;'>{ mo.ui.checkbox(False, label="Hypercube Posterior",disabled=True)}</div>")
 
     controls = mo.hstack([
         mo.vstack([
