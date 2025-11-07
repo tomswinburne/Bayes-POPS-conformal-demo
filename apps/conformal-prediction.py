@@ -319,7 +319,7 @@ def _(
     ax.set_ylim(-1.5, 1.5)
     ax.set_xlabel('$x$')
     ax.set_ylabel('$y$')
-    ax.legend(loc='lower left')
+    ax.legend(loc='lower left',fontsize=7)
     plt.tight_layout()
     mo.center(fig)
     return
