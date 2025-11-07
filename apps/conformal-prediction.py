@@ -303,7 +303,7 @@ def _(
         ax.plot(X_test[:, 0], y_pred, color=color, lw=3)
         ax.fill_between(X_test[:, 0], y_pred - y_std, y_pred + y_std, alpha=0.5, color=color, label=label)
         if label == 'POPS regression':
-            ax.fill_between(X_test[:, 0], y_min, y_max, alpha=0.5, color='k', label='POPS min/max')
+            ax.fill_between(X_test[:, 0], y_min, y_max, alpha=0.8, color='k', label='POPS min/max')
     caption = fr'$N=${get_N_samples()} data, $\sigma$={get_sigma():.2f} noise'
     if bayesian.value or conformal.value:
         caption += fr', $P=${get_P()} params'
@@ -315,7 +315,7 @@ def _(
     ax.set_ylim(-1.5, 1.5)
     ax.set_xlabel('$x$')
     ax.set_ylabel('$y$')
-    ax.legend(loc='lower left',fontsize=7)
+    ax.legend(loc='lower left',fontsize=9)
     plt.tight_layout()
     mo.center(fig)
     return
@@ -407,7 +407,7 @@ def _(
 
 @app.cell(hide_code=True)
 def _(mo):
-    bayesian = mo.ui.checkbox(False, label="Bayesian fit")
+    bayesian = mo.ui.checkbox(False, label="Bayesian inference")
     conformal = mo.ui.checkbox(False, label="Conformal prediction")
     pops = mo.ui.checkbox(False, label="POPS regression")
     return bayesian, conformal, pops
