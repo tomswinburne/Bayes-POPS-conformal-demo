@@ -123,7 +123,7 @@ def _(BayesianRidge, np):
                 E        = X[i, :].T @ self.coef_
                 dy       = y[i] - E
                 dθ[i, :] = (dy / leverage) * V
-            self._dθ = dθ # num_samples,num_basis
+            self._dθ = dθ
 
             U, S, Vh = np.linalg.svd(self._dθ, full_matrices=False)
             projected = self._dθ @ Vh.T
@@ -136,28 +136,17 @@ def _(BayesianRidge, np):
             for j in range(n_samples):
                 u = np.random.uniform(num_basis)
                 δθ[j, :] = (Vh @ (bounds[:, 0] + bounds[:, 1] * u)) + self.coef_
-            self._misspecification_sigma = δθ.T @ δθ / n_samples + super().sigma_
+            self._misspecification_sigma = δθ.T @ δθ / n_samples
 
-        def predict(self, X, return_std=False, aleatoric=False, return_bounds=False):
+        def predict(self, X, return_std=False, aleatoric=False):
             y_pred = super().predict(X)
-            if return_bounds:
-                y_max = y_pred + (self._dθ * X).sum(axis=1).max()
-                y_min = y_pred + (self._dθ * X).sum(axis=1).min()
-                if return_std:
-                    y_std = ((X @ self._misspecification_sigma + ) * X).sum(axis=1)
-                    if aleatoric:
-                        y_std = np.sqrt(y_std**2 + 1.0 / self.alpha_)
-                    return (y_pred, y_std,y_max,y_min)
-                else:
-                    return y_pred,y_max,y_min
+            if return_std:
+                y_std = ((X @ self._misspecification_sigma) * X).sum(axis=1)
+                if aleatoric:
+                    y_std = np.sqrt(y_std**2 + 1.0 / self.alpha_)
+                return (y_pred, y_std)
             else:
-                if return_std:
-                    y_std = ((X @ self._misspecification_sigma) * X).sum(axis=1)
-                    if aleatoric:
-                        y_std = np.sqrt(y_std**2 + 1.0 / self.alpha_)
-                    return (y_pred, y_std)
-                else:
-                    return y_pred        
+                return y_pred        
 
     class ConformalPrediction(MyBayesianRidge):
         def get_scores(self, X, y, aleatoric=False):
@@ -225,7 +214,7 @@ def _(
     ConformalPrediction,
     MyBayesianRidge,
     N_samples,
-    MyPOPSRegression,
+    POPSRegression,
     PolynomialFeatures,
     aleatoric,
     bayesian,
@@ -274,7 +263,7 @@ def _(
     Phi_calib = poly.transform(X_calib)
 
     b = MyBayesianRidge(fit_intercept=False) 
-    p = MyPOPSRegression(fit_intercept=False)#, percentile_clipping=get_percentile_clipping(), leverage_percentile=get_leverage_percentile())
+    p = POPSRegression(fit_intercept=False, percentile_clipping=get_percentile_clipping(), leverage_percentile=get_leverage_percentile(), resample_density=get_resample_density())
     c = ConformalPrediction(fit_intercept=False)
 
     ax.plot(X_test[:, 0], y_test, 'k-', label='Truth')
@@ -295,25 +284,24 @@ def _(
         if label == 'POPS regression' and not pops.value:
             continue
 
+        model.fit(Phi_train, y_train)
         kwargs = {
             'return_std': True,
             'aleatoric': aleatoric.value,
         }        
         if label == 'Conformal prediction':
-            model.fit(Phi_train, y_train)
             qhat = model.calibrate(Phi_calib, y_calib, zeta=get_zeta(), aleatoric=aleatoric.value)
             kwargs['rescale'] = True
 
         if label == 'POPS regression':
-            n_samples = int(y_train.size * get_resample_density())
-            model.fit(Phi_train, y_train,clipping=get_percentile_clipping(),n_samples=n_samples)
             y_pred, y_std, y_max, y_min = model.predict(Phi_test, return_std=True, return_bounds=True)
+            y_max = y_pred + (model.pointwise_corrections@Phi_test).max()
+            y_min = y_pred + (model.pointwise_corrections@Phi_test).min()
             if aleatoric.value:
                 y_std = np.sqrt(y_std**2 + 1.0 / model.alpha_)
                 y_min -= np.sqrt(1.0 / model.alpha_)
                 y_max += np.sqrt(1.0 / model.alpha_)
         else:
-            model.fit(Phi_train, y_train)
             y_pred, y_std = model.predict(Phi_test, **kwargs)
             
         
