@@ -198,10 +198,8 @@ def _(mo, qr_base64):
     mo.Html(f'''
     <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0; padding-top: 0;">
         <div>
-            <p style='font-size: 24px; margin: 0; padding: 0;'><b>Conformal Prediction and POPS Regression Demo</b>
-            <br><i>Live demo:</i>
-            <a href="https://tinyurl.com/conf-pred-demo" target="_blank" style="color: #0066cc; text-decoration: none;">tinyurl.com/conf-pred-demo</a>
-            <br><i>Code:</i>
+            <p style='font-size: 24px; margin: 0; padding: 0;'><b>Bayesian Inference, Conformal Prediction and POPS Regression Demo</b>
+            <br><i>Forked from Kermode Group, U Warwick:</i>
             <a href="https://github.com/kermodegroup/conformal-prediction-demo" target="_blank" style="color: #0066cc; text-decoration: none;">github.com/kermodegroup/conformal-prediction-demo</a>
             </p>
         </div>
@@ -295,7 +293,7 @@ def _(
             kwargs['rescale'] = True
 
         if label == 'POPS regression':
-            y_pred, y_std, y_min, y_max = model.predict(Phi_test, return_std=True, return_bounds=True)
+            y_pred, y_std, y_max, y_min = model.predict(Phi_test, return_std=True, return_bounds=True)
             if aleatoric.value:
                 y_std = np.sqrt(y_std**2 + 1.0 / model.alpha_)
                 y_min -= np.sqrt(1.0 / model.alpha_)
@@ -305,9 +303,7 @@ def _(
         ax.plot(X_test[:, 0], y_pred, color=color, lw=3)
         ax.fill_between(X_test[:, 0], y_pred - y_std, y_pred + y_std, alpha=0.5, color=color, label=label)
         if label == 'POPS regression':
-            ax.plot(X_test[:, 0], y_min, 'k--', lw=1, label='POPS min/max')
-            ax.plot(X_test[:, 0], y_max, 'k--', lw=1)
-
+            ax.fill_between(X_test[:, 0], y_min, y_max, alpha=0.5, color='k', label='POPS min/max')
     caption = fr'$N=${get_N_samples()} data, $\sigma$={get_sigma():.2f} noise'
     if bayesian.value or conformal.value:
         caption += fr', $P=${get_P()} params'
